@@ -14,7 +14,7 @@ class DeliverymanController {
 
     if (!(await schema.isValid(req.body))) {
       return res
-        .status(400)
+        .status(422)
         .json({ error: 'Email, name or image are required fields' });
     }
 
