@@ -13,6 +13,8 @@ import Recipient from '../models/Recipient';
 import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
 
+import Mail from '../../lib/Mail';
+
 class OrderController {
   async index(req, res) {
     const orderList = await Order.findAll();
@@ -65,6 +67,22 @@ class OrderController {
         error: 'Error to create a new order',
       });
     }
+
+    await Mail.sendMail({
+      to: `${checkDeliveryman.name} <${checkDeliveryman.email}>`,
+      subject: 'Encomenda cadastrada',
+      template: 'create',
+      context: {
+        deliveryman: checkDeliveryman.name,
+        product: req.body.product,
+        recipient: checkRecipient.name,
+        street: checkRecipient.street,
+        number: checkRecipient.number,
+        state: checkRecipient.state,
+        city: checkRecipient.city,
+        cep: checkRecipient.zip_code,
+      },
+    });
 
     return res.status(201).json({ message: 'Order created' });
   }
