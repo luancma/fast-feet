@@ -105,6 +105,7 @@ class OrderController {
     }
 
     const startDate = parseISO(req.body.start_date);
+
     const startOfBusinessHours = setSeconds(
       setMinutes(setHours(new Date(), 8), 0),
       0
