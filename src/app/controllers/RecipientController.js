@@ -40,7 +40,6 @@ class RecipientController {
       return res.json(foundRecipient);
     }
 
-    console.log('teste');
     return res.json(foundRecipient);
   }
 
