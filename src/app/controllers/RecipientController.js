@@ -1,5 +1,6 @@
 import Recipient from '../models/Recipient';
 import * as Yup from 'yup';
+import { Op } from 'sequelize';
 
 class RecipientController {
   async store(req, res) {
@@ -9,7 +10,7 @@ class RecipientController {
       number: Yup.string().required(),
       state: Yup.string().required(),
       city: Yup.string().required(),
-      zip_code: Yup.string().required(),
+      zip_code: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -23,6 +24,23 @@ class RecipientController {
     }
 
     return res.json({ newRecipient });
+  }
+
+  async index(req, res) {
+    let foundRecipient = await Recipient.findAll({
+      where: {
+        name: {
+          [Op.iLike]: req.query.q,
+        },
+      },
+    });
+
+    if (!foundRecipient.length) {
+      let foundRecipient = await Recipient.findAll();
+      return res.json(foundRecipient);
+    }
+
+    return res.json(foundRecipient);
   }
 
   async update(req, res) {

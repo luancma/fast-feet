@@ -1,6 +1,7 @@
 import Deliveryman from '../models/Deliveryman';
 import * as Yup from 'yup';
 import File from '../models/File';
+import { Op } from 'sequelize';
 
 class DeliverymanController {
   async store(req, res) {
@@ -30,19 +31,23 @@ class DeliverymanController {
   }
 
   async index(req, res) {
-    const deliveryman = await Deliveryman.findAll({
+    let deliveryman = await Deliveryman.findAll({
       include: [
         {
           model: File,
           attributes: ['name', 'path', 'url'],
+          where: {
+            name: {
+              [Op.iLike]: req.query.q,
+            },
+          },
         },
       ],
     });
 
-    if (!deliveryman) {
-      return res.status(401).json({
-        error: `Error to get the deliveryman's list`,
-      });
+    if (!deliveryman.length) {
+      let deliveryman = await Deliveryman.findAll();
+      return res.json(deliveryman);
     }
 
     return res.json(deliveryman);

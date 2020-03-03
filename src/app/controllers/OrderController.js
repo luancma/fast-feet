@@ -14,10 +14,22 @@ import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
 
 import Mail from '../../lib/Mail';
+import { Op } from 'sequelize';
 
 class OrderController {
   async index(req, res) {
-    const orderList = await Order.findAll();
+    let orderList = await Order.findAll({
+      where: {
+        product: {
+          [Op.iLike]: req.query.q,
+        },
+      },
+    });
+
+    if (!orderList.length) {
+      let orderList = await Order.findAll();
+      return res.json(orderList);
+    }
 
     return res.json(orderList);
   }
