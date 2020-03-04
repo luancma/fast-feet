@@ -20,7 +20,8 @@ routes.post('/files', upload.single('file'), FileController.store);
 routes.get('/deliveryman/:id/deliveries', DeliveriesController.index);
 routes.put('/deliveryman/:id/deliveries/:orderid', DeliveriesController.put);
 
-routes.use(authMiddleware);
+routes.put('/delivery/:id/problems', DeliveriesController.put);
+routes.get('/delivery/:id/problems', DeliveriesController.put);
 
 routes.get('/recipients', RecipientController.index);
 routes.post('/recipients', RecipientController.store);
