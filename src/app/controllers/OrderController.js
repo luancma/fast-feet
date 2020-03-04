@@ -18,16 +18,23 @@ import { Op } from 'sequelize';
 
 class OrderController {
   async index(req, res) {
+    const { page = 1 } = req.query;
+
     let orderList = await Order.findAll({
       where: {
         product: {
           [Op.iLike]: req.query.q,
         },
       },
+      limit: 20,
+      offset: (page - 1) * 20,
     });
 
     if (!orderList.length) {
-      let orderList = await Order.findAll();
+      let orderList = await Order.findAll({
+        limit: 20,
+        offset: (page - 1) * 20,
+      });
       return res.json(orderList);
     }
 

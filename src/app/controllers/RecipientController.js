@@ -27,16 +27,23 @@ class RecipientController {
   }
 
   async index(req, res) {
-    let foundRecipient = await Recipient.findAll({
+    const { page = 1 } = req.query;
+
+    const foundRecipient = await Recipient.findAll({
       where: {
         name: {
           [Op.iLike]: req.query.q,
         },
       },
+      limit: 20,
+      offset: (page - 1) * 20,
     });
 
     if (!foundRecipient.length) {
-      let foundRecipient = await Recipient.findAll();
+      const foundRecipient = await Recipient.findAll({
+        limit: 20,
+        offset: (page - 1) * 20,
+      });
       return res.json(foundRecipient);
     }
 

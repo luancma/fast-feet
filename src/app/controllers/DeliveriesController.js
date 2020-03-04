@@ -30,12 +30,16 @@ class DeliverymanDeliveriesController {
       });
     }
 
+    const { page = 1 } = req.query;
+
     const deliveries = await Order.findAll({
       where: {
         deliveryman_id: deliveryman.id,
         canceled_at: null,
         end_date: null,
       },
+      limit: 20,
+      offset: (page - 1) * 20,
       attributes: ['id', 'product', 'start_date', 'end_date'],
       include: [
         {
