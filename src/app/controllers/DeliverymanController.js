@@ -33,7 +33,7 @@ class DeliverymanController {
   async index(req, res) {
     const { page = 1 } = req.query;
 
-    let deliveryman = await Deliveryman.findAll({
+    const deliveryman = await Deliveryman.findAll({
       limit: 20,
       offset: (page - 1) * 20,
       include: [
@@ -50,8 +50,17 @@ class DeliverymanController {
     });
 
     if (!deliveryman.length) {
-      let deliveryman = await Deliveryman.findAll();
-      return res.json(deliveryman);
+      const deliveryman = await Deliveryman.findAll({
+        limit: 20,
+        offset: (page - 1) * 20,
+        include: [
+          {
+            model: File,
+            attributes: ['name', 'path', 'url'],
+          },
+        ],
+      });
+      return res.json({ deliveryman });
     }
 
     return res.json(deliveryman);
