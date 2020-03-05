@@ -23,6 +23,10 @@ routes.put('/deliveryman/:id/deliveries/:orderid', DeliveriesController.put);
 
 routes.get('/delivery/:id/problems', DeliveryProblemsController.index);
 routes.post('/delivery/:id/problems', DeliveryProblemsController.store);
+routes.delete(
+  '/problem/:id/cancel-delivery',
+  DeliveryProblemsController.destroy
+);
 
 routes.get('/recipients', RecipientController.index);
 routes.post('/recipients', RecipientController.store);
