@@ -20,8 +20,9 @@ class OrderController {
   async index(req, res) {
     const { page = 1 } = req.query;
 
-    let orderList = await Order.findAll({
+    let deliveries = await Order.findAll({
       where: {
+        canceled_at: null,
         product: {
           [Op.iLike]: req.query.q,
         },
@@ -30,15 +31,18 @@ class OrderController {
       offset: (page - 1) * 20,
     });
 
-    if (!orderList.length) {
-      let orderList = await Order.findAll({
+    if (!deliveries.length) {
+      let deliveries = await Order.findAll({
         limit: 20,
         offset: (page - 1) * 20,
+        where: {
+          canceled_at: null,
+        },
       });
-      return res.json(orderList);
+      return res.json({ deliveries });
     }
 
-    return res.json(orderList);
+    return res.json(deliveries);
   }
 
   async store(req, res) {
@@ -46,7 +50,6 @@ class OrderController {
       product: Yup.string().required(),
       recipient_id: Yup.number().required(),
       deliveryman_id: Yup.number().required(),
-      signature_id: Yup.number().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -68,14 +71,6 @@ class OrderController {
     if (!checkDeliveryman) {
       return res.status(404).json({
         error: 'The deliveryman value not valid',
-      });
-    }
-
-    const checkSignature = await File.findByPk(signature_id);
-
-    if (!checkSignature) {
-      return res.status(404).json({
-        error: 'The signature value not valid',
       });
     }
 
@@ -115,7 +110,12 @@ class OrderController {
       return res.status(422).json({ error: 'Order id is not valid' });
     }
 
-    const foundOrder = await Order.findByPk(req.params.id);
+    const foundOrder = await Order.findOne({
+      where: {
+        id: req.params.id,
+        canceled_at: null,
+      },
+    });
 
     if (!foundOrder) {
       return res.status(404).json({

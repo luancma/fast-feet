@@ -9,6 +9,7 @@ import FileController from './app/controllers/FileController';
 import DeliverymanController from './app/controllers/DeliverymanController';
 import DeliveriesController from './app/controllers/DeliveriesController';
 import OrderController from './app/controllers/OrderController';
+import DeliveryProblemsController from './app/controllers/DeliveryProblemsController';
 
 const routes = new Router();
 const upload = multer(multerConfig);
@@ -20,7 +21,12 @@ routes.post('/files', upload.single('file'), FileController.store);
 routes.get('/deliveryman/:id/deliveries', DeliveriesController.index);
 routes.put('/deliveryman/:id/deliveries/:orderid', DeliveriesController.put);
 
-routes.use(authMiddleware);
+routes.get('/delivery/:id/problems', DeliveryProblemsController.index);
+routes.post('/delivery/:id/problems', DeliveryProblemsController.store);
+routes.delete(
+  '/problem/:id/cancel-delivery',
+  DeliveryProblemsController.destroy
+);
 
 routes.get('/recipients', RecipientController.index);
 routes.post('/recipients', RecipientController.store);
