@@ -1,12 +1,11 @@
 import Mail from '../../lib/Mail';
-import pt from 'date-fns/locale/pt';
 class CreateDeliveryEmail {
   get key() {
-    return 'CancellationMail';
+    return 'CreateDeliveryEmail';
   }
 
   async handle({ data }) {
-    const { foundDeliveryman, foundRecipient } = data;
+    const { foundDeliveryman, foundRecipient, productName } = data;
 
     await Mail.sendMail({
       to: `${foundDeliveryman.name} <${foundDeliveryman.email}>`,
@@ -14,7 +13,7 @@ class CreateDeliveryEmail {
       template: 'create',
       context: {
         deliveryman: foundDeliveryman.name,
-        product: req.body.product,
+        product: productName,
         recipient: foundRecipient.name,
         street: foundRecipient.street,
         number: foundRecipient.number,

@@ -7,6 +7,7 @@ import {
   setSeconds,
   setMinutes,
 } from 'date-fns';
+
 import { Op } from 'sequelize';
 
 import Order from '../models/Order';
@@ -85,9 +86,10 @@ class OrderController {
     await Queue.add(CreateDeliveryEmail.key, {
       foundDeliveryman,
       foundRecipient,
+      productName: req.body.product,
     });
 
-    return res.status(201).json({ message: 'Order created' });
+    return res.status(201).json({ newOrder });
   }
 
   async update(req, res) {
