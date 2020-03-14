@@ -12,9 +12,10 @@ import Order from '../models/Order';
 import Recipient from '../models/Recipient';
 import Deliveryman from '../models/Deliveryman';
 import File from '../models/File';
-
-import Mail from '../../lib/Mail';
 import { Op } from 'sequelize';
+
+import CreateDeliveryEmail from '../jobs/CreateDeliveryEmail';
+import Queue from '../../lib/Queue';
 
 class OrderController {
   async index(req, res) {
@@ -82,20 +83,10 @@ class OrderController {
       });
     }
 
-    await Mail.sendMail({
-      to: `${checkDeliveryman.name} <${checkDeliveryman.email}>`,
-      subject: 'Encomenda cadastrada',
-      template: 'create',
-      context: {
-        deliveryman: checkDeliveryman.name,
-        product: req.body.product,
-        recipient: checkRecipient.name,
-        street: checkRecipient.street,
-        number: checkRecipient.number,
-        state: checkRecipient.state,
-        city: checkRecipient.city,
-        cep: checkRecipient.zip_code,
-      },
+    await Queue.add(CreateDeliveryEmail.key, {
+      foundDeliveryman,
+      foundRecipient,
+      productName: req.body.product,
     });
 
     return res.status(201).json({ message: 'Order created' });
