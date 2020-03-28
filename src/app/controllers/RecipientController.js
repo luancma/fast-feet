@@ -10,14 +10,16 @@ class RecipientController {
       number: Yup.string().required(),
       state: Yup.string().required(),
       city: Yup.string().required(),
-      zip_code: Yup.number().required(),
+      zip_code: Yup.string().matches(/[0-9]{5}-[\d]{3}/).required()
     });
+    
 
     if (!(await schema.isValid(req.body))) {
       return res.status(422).json({ error: 'Please fill in all fields' });
     }
-
+    
     const newRecipient = await Recipient.create(req.body);
+
 
     if (!newRecipient) {
       return res.status(401).json({ error: 'Error to create a new recipient' });
